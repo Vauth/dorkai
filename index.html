@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF--8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DorkAI</title>
+    <link rel="icon" type="image/png" href="resources/favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body class="bg-[--bg-base] text-[--text-base] flex items-center justify-center min-h-screen overflow-hidden">
+    <canvas id="stars-bg"></canvas>
+
+    <div class="w-full max-w-2xl mx-auto p-4 md:p-8 z-10">
+        <div class="flex justify-between items-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-[--text-title]">AI Powered Dorker</h1>
+            <div class="flex items-center space-x-3">
+                <button id="history-btn" title="History" class="text-gray-500 hover:text-white transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M12 8v4l2 2"></path></svg>
+                </button>
+                <button id="settings-toggle-btn" title="API Key Settings" class="text-gray-500 hover:text-white transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2.4l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2.4l.15.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <div class="relative">
+                <textarea id="dork-description" rows="4" class="w-full bg-[--bg-input] border border-[--border-color] rounded-lg p-4 text-[--text-title] focus:outline-none focus:ring-2 focus:ring-white transition duration-200 placeholder-gray-500 text-base" placeholder="Describe the dork you want to create... e.g., find exposed server config files..."></textarea>
+            </div>
+
+            <button id="generate-btn" class="w-full bg-white hover:bg-gray-200 text-black font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out flex items-center justify-center text-base">
+                <span id="btn-text">Generate Dork</span>
+                <div id="loader" class="loader ease-linear rounded-full border-4 border-t-4 border-gray-500 h-6 w-6 ml-3 hidden"></div>
+            </button>
+
+            <div id="error-box" class="hidden border border-red-500/50 bg-red-500/10 text-red-300 px-4 py-3 rounded-lg" role="alert">
+                <p id="error-message">Something went wrong.</p>
+            </div>
+
+            <div id="result-container" class="hidden pt-4">
+                <div class="bg-[--bg-input] border border-[--border-color] p-4 rounded-lg">
+                    <pre><code id="generated-dork" class="text-[--text-title] text-sm md:text-base whitespace-pre-wrap break-all"></code></pre>
+                    <div class="flex items-center space-x-3 mt-4 pt-4 border-t border-[--border-color]">
+                        <button id="refine-btn" title="Refine Dork" class="flex items-center text-[--text-base] hover:text-white transition duration-200">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>
+                             <span class="ml-2">Refine</span>
+                        </button>
+                        <div class="flex-grow"></div>
+                        <button id="copy-btn" title="Copy Dork" class="text-[--text-base] hover:text-white transition duration-200">
+                            <svg id="copy-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            <svg id="check-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </button>
+                        <a id="search-btn" href="#" target="_blank" title="Search on Google" class="text-[--text-base] hover:text-white transition duration-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="panel-overlay" class="panel-overlay"></div>
+
+    <div id="history-panel" class="panel fixed top-0 right-0 h-full w-full max-w-sm bg-[--bg-surface] border-l border-[--border-color] shadow-lg z-50 p-6 flex flex-col">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-white">History</h2>
+            <button id="close-history-btn" class="text-gray-500 hover:text-white">&times;</button>
+        </div>
+        <div id="history-list" class="history-list flex-grow overflow-y-auto -mr-6 pr-6 space-y-3">
+            </div>
+        <button id="clear-history-btn" class="mt-4 w-full bg-transparent hover:bg-red-500/20 text-red-400 border border-red-500/50 text-sm font-bold py-2 px-3 rounded-md transition">Clear History</button>
+    </div>
+
+    <div id="settings-panel" class="panel fixed top-0 right-0 h-full w-full max-w-sm bg-[--bg-surface] border-l border-[--border-color] shadow-lg z-50 p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-white">Settings</h2>
+            <button id="close-settings-btn" class="text-gray-500 hover:text-white">&times;</button>
+        </div>
+        <label for="api-key-input" class="block text-sm font-medium text-[--text-title] mb-2">Gemini API Key</label>
+        <input type="password" id="api-key-input" class="w-full bg-[--bg-input] border border-[--border-color] text-[--text-title] p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-white text-sm" placeholder="Enter your API key">
+        <button id="save-key-btn" class="w-full mt-3 bg-white hover:bg-gray-200 text-black text-sm font-bold py-2 px-3 rounded-md transition">Save Key</button>
+        <p id="save-key-feedback" class="text-xs text-center mt-2 text-gray-400"></p>
+    </div>
+
+    <script src="scripts/script.js"></script>
+</body>
+</html>
