@@ -116,7 +116,7 @@ async function fetchDork(prompt, retries = 3, delay = 1000) {
         systemInstruction: { parts: [{ text: systemPrompt }] }
     };
     const userApiKey = elements.apiKeyInput.value.trim();
-    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${userApiKey}`;
+    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${userApiKey}`;
 
     try {
         const response = await fetch(API_URL, {
